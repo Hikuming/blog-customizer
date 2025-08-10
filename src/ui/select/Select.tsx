@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import type { MouseEventHandler } from 'react';
 import clsx from 'clsx';
 import { OptionType } from 'src/constants/articleProps';
@@ -26,6 +26,12 @@ export const Select = (props: SelectProps) => {
 	const rootRef = useRef<HTMLDivElement>(null);
 	const placeholderRef = useRef<HTMLDivElement>(null);
 	const optionClassName = selected?.optionClassName ?? '';
+
+	useEffect(() => {
+		if (selected && placeholderRef.current) {
+			placeholderRef.current.focus();
+		}
+	}, [selected]);
 
 	useOutsideClickClose({
 		isOpen,
