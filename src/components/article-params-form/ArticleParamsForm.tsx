@@ -2,7 +2,7 @@ import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
 
 import styles from './ArticleParamsForm.module.scss';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import clsx from 'clsx';
 import { RadioGroup } from 'src/ui/radio-group';
@@ -18,6 +18,7 @@ import {
 import { Select } from 'src/ui/select/Select';
 import { Separator } from 'src/ui/separator';
 import { Text } from 'src/ui/text';
+import { useOutsideClickClose } from 'src/ui/select/hooks/useOutsideClickClose';
 
 type ArticleParamsFormProps = {
 	currentState: typeof defaultArticleState;
@@ -29,7 +30,14 @@ export const ArticleParamsForm = ({
 	onClick,
 }: ArticleParamsFormProps) => {
 	const [formState, setFormState] = useState(currentState);
-	const [isOpen, setIsOpen] = useState(false);
+	const [isMenuOpen, setIsMenuOpen] = useState(false);
+	const formRef = useRef<HTMLDivElement>(null);
+
+	useOutsideClickClose({
+		isOpen: isMenuOpen,
+		rootRef: formRef,
+		onChange: setIsMenuOpen,
+	});
 
 	const handleSubmit = (e: React.FormEvent) => {
 		onClick(formState);
@@ -37,7 +45,7 @@ export const ArticleParamsForm = ({
 	};
 
 	const toggleForm = () => {
-		setIsOpen(!isOpen);
+		setIsMenuOpen(!isMenuOpen);
 	};
 
 	const handleReset = () => {
@@ -81,10 +89,12 @@ export const ArticleParamsForm = ({
 	};
 
 	return (
-		<>
-			<ArrowButton isOpen={isOpen} onClick={toggleForm} />
+		<div ref={formRef}>
+			<ArrowButton isOpen={isMenuOpen} onClick={toggleForm} />
 			<aside
-				className={clsx(styles.container, { [styles.container_open]: isOpen })}>
+				className={clsx(styles.container, {
+					[styles.container_open]: isMenuOpen,
+				})}>
 				<form className={styles.form} onSubmit={handleSubmit}>
 					<Text size={31} weight={800} uppercase dynamicLite>
 						Задайте параметры
@@ -132,6 +142,6 @@ export const ArticleParamsForm = ({
 					</div>
 				</form>
 			</aside>
-		</>
+		</div>
 	);
 };
